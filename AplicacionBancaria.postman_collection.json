@@ -157,7 +157,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/cuenta/buscar?id=1",
+							"raw": "http://localhost:8080/cuenta/buscar?id=2",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -170,7 +170,7 @@
 							"query": [
 								{
 									"key": "id",
-									"value": "1"
+									"value": "2"
 								}
 							]
 						}
@@ -224,7 +224,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"tipoTransaccion\": \"retirar\",\r\n    \"monto\": 300000.97,\r\n    \"idCuenta\": 1,\r\n    \"tipoCuentaDestino\": \"CA\"\r\n}",
+							"raw": "{\r\n    \"tipoTransaccion\": \"depositar\",\r\n    \"monto\": 300000.97,\r\n    \"idCuenta\": 1,\r\n    \"tipoCuentaDestino\": \"CC\"\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -248,21 +248,9 @@
 				},
 				{
 					"name": "listarTransacciones",
-					"protocolProfileBehavior": {
-						"disableBodyPruning": true
-					},
 					"request": {
 						"method": "GET",
 						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\r\n    \"idUsuario\": 123,\r\n    \"idCuenta\": 1010,\r\n    \"TipoCuenta\": \"CA\"\r\n}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
 						"url": {
 							"raw": "http://localhost:8080/transaccion/buscar?id=1",
 							"protocol": "http",

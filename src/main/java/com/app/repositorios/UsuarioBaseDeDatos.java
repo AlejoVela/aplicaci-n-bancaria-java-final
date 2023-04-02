@@ -1,12 +1,14 @@
 package com.app.repositorios;
 
+import com.app.entidades.Cuenta;
+import com.app.entidades.CuentaDeAhorros;
 import com.app.entidades.Usuario;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public class UsuarioBaseDeDatos implements  Repositorio{
+public class UsuarioBaseDeDatos implements Repositorio {
     private String conexionBD;
 
     public UsuarioBaseDeDatos(){
@@ -14,11 +16,9 @@ public class UsuarioBaseDeDatos implements  Repositorio{
             DriverManager.registerDriver(new org.sqlite.JDBC());
             conexionBD = "jdbc:sqlite:banco.db";
         }catch (SQLException e){
-            System.err.println("Error de conexión: " + e);
+            System.err.println("Error de base de datos: " + e);
         }
     }
-
-
 
     @Override
     public Object crear(Object objeto) {
@@ -34,9 +34,9 @@ public class UsuarioBaseDeDatos implements  Repositorio{
             if(message.contains("SQLITE_CONSTRAINT_UNIQUE")){
                 throw new RuntimeException("Error: " + "La identificacion ingresada ya existe");
             }
-            throw new RuntimeException("Error de conexión: " + e);
+            throw new RuntimeException("Error de base de datos: " + e);
         } catch (Exception e) {
-            return new RuntimeException("Error " + e.getMessage());
+            return new RuntimeException("Error: " + e.getMessage());
         }
         return "Usuario creado";
     }
@@ -80,15 +80,19 @@ public class UsuarioBaseDeDatos implements  Repositorio{
 
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaSql);
             sentencia.setInt(1, idUsuario);
-            sentencia.executeUpdate();
+            
+            int tuplasAfectadas = sentencia.executeUpdate();
 
-            return "El usuario ha sido eliminado";
-
+            if(tuplasAfectadas > 0){
+                return "El usuario ha sido eliminado";
+            } else {
+                throw new RuntimeException("El usuario indicado no existe");
+            }
         } catch (SQLException e) {
-            return "Hubo un error con la conexión: " + e;
+            throw new RuntimeException("Hubo un error con la conexión: " + e);
         } catch (Exception e) {
-            return "Error " + e.getMessage();
-    }
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
     }
 
     @Override
@@ -114,8 +118,46 @@ public class UsuarioBaseDeDatos implements  Repositorio{
                 return usuarios;
             }
         } catch (SQLException e) {
-            System.err.println("Error de conexión: " + e);
+            System.err.println("Error de base de datos: " + e);
         }
         return null;
+    }
+
+    @Override
+    public Object Buscar(int idUsuarioAEncontrar) {
+        try (Connection conexion = DriverManager.getConnection(conexionBD)) {
+
+            String sentenciaSql =
+                    "SELECT * FROM USUARIOS "
+                            + "WHERE ID = ?";
+
+            PreparedStatement sentencia = conexion.prepareStatement(sentenciaSql);
+            sentencia.setInt(1, idUsuarioAEncontrar);
+            ResultSet resultadoConsulta = sentencia.executeQuery();
+
+            if (resultadoConsulta != null && resultadoConsulta.next()) {
+                Usuario usuario = new Usuario(
+                            idUsuarioAEncontrar,
+                            resultadoConsulta.getString("NOMBRE"),
+                            resultadoConsulta.getString("APELLIDO"),
+                            resultadoConsulta.getString("CEDULA")
+                        );
+
+                usuario.setId(idUsuarioAEncontrar);
+
+                return usuario;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Error de base de datos: " + e);
+        } catch (Exception e) {
+            throw new RuntimeException("Error: " + e.getMessage());
+        }
+
+        return null;
+    }
+
+    @Override
+    public Object Actualizar(Object objecto) {
+        throw new RuntimeException("No implementado para este repositorio");
     }
 }

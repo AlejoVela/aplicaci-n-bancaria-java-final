@@ -4,6 +4,7 @@ import java.util.ArrayList;
 
 public abstract class Cuenta {
 
+    protected int id;
     protected float saldo;
     protected String numeroDeCuenta;
     protected String tipoCuenta;
@@ -21,15 +22,23 @@ public abstract class Cuenta {
 
     public abstract void consignarDinero(float dinero);
 
-    public  abstract ArrayList<Cuenta> transferirDinero(Cuenta cuentaOrigen, Cuenta cuentaDestino, float transferencia);
+    public  abstract void transferirDinero(String cuentaDestino, float montoTransferencia);
 
     public void retirarDinero (float dinero){
         if (dinero <= this.saldo) {
             this.saldo -= dinero;
             this.numeroDeRetiros++;
         }else {
-            System.out.println("Saldo insuficiente");
+            throw new RuntimeException("Saldo insuficiente");
         }
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getIdUsuario() {
@@ -78,5 +87,21 @@ public abstract class Cuenta {
 
     public void setNumeroDeConsignaciones(int numeroDeConsignaciones) {
         this.numeroDeConsignaciones = numeroDeConsignaciones;
+    }
+
+    public void RealizarTransaccion(Transaccion transaccion){
+        switch (transaccion.getTipoTransaccion().toLowerCase()) {
+            case "depositar":
+                this.consignarDinero(transaccion.getMonto());
+                break;
+            case "retirar":
+                this.retirarDinero(transaccion.getMonto());
+                break;
+            case "transferir":
+                this.transferirDinero(transaccion.getTipoCuentaDestino(), transaccion.getMonto());
+                break;
+            default:
+                throw new RuntimeException("Transaccion desconocida");
+        }
     }
 }

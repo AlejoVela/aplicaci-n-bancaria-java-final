@@ -39,27 +39,19 @@ public class CuentaDeAhorros extends Cuenta {
     }
 
     @Override
-    public ArrayList<Cuenta> transferirDinero(Cuenta cuentaOrigen, Cuenta cuentaDestino, float transferencia){
+    public void transferirDinero(String cuentaDestino, float montoTransferencia){
 
-        float dinero = (float) (transferencia + (transferencia * 0.015));
+        float dinero = (float) (montoTransferencia + (montoTransferencia * 0.015));
 
-        if (cuentaOrigen.getTipoCuenta() != cuentaDestino.getTipoCuenta()){
+        if (this.getTipoCuenta() != cuentaDestino){
 
-            if (transferencia <= this.saldo) {
-                cuentaOrigen.retirarDinero(dinero);
-                cuentaDestino.consignarDinero(transferencia);
+            if (montoTransferencia <= this.saldo) {
+                this.saldo -= dinero;
             }
         }else{
-            if (transferencia <= this.saldo) {
-                cuentaOrigen.retirarDinero(transferencia);
-                cuentaDestino.consignarDinero(transferencia);
+            if (montoTransferencia <= this.saldo) {
+                this.saldo -= montoTransferencia;
             }
-
         }
-        ArrayList<Cuenta> cuentas = new ArrayList<>();
-        cuentas.add(cuentaOrigen);
-        cuentas.add(cuentaDestino);
-        return cuentas;
-
     }
 }

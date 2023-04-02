@@ -77,7 +77,7 @@ public class CuentaController extends HttpServlet {
                 String json = mapper.writeValueAsString(respuesta);
 
                 // configuramos la respuesta a devolver
-                response.setStatus(HttpServletResponse.SC_CREATED);
+                response.setStatus(HttpServletResponse.SC_OK);
                 response.setContentType("application/json");
                 response.getWriter().println(json);
             } catch (Exception e){

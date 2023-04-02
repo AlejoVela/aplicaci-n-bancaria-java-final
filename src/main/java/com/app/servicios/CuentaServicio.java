@@ -6,44 +6,53 @@ import com.app.entidades.CuentaDeAhorros;
 import com.app.entidades.Usuario;
 import com.app.repositorios.CuentaBaseDeDatos;
 import com.app.repositorios.Repositorio;
+import com.app.repositorios.UsuarioBaseDeDatos;
 
 import java.util.List;
 import java.util.Map;
 
 public class CuentaServicio implements Servicio{
-    private Repositorio repositorio;
+    private Repositorio repositorioCuenta;
+    private Repositorio repositorioUsuario;
 
     public CuentaServicio() {
-        repositorio = new CuentaBaseDeDatos();
+        repositorioCuenta = new CuentaBaseDeDatos();
+        repositorioUsuario = new UsuarioBaseDeDatos();
     }
 
     public Object crear(Map objeto) {
         String numeroCuenta = (String) objeto.get("numeroCuenta");
         int idUsuario = (int) objeto.get("idUsuario");
         String tipoCuenta = (String) objeto.get("TipoCuenta");
-        int saldo = (int) objeto.get("saldo");
+        double saldo = (double) objeto.get("saldo");
 
         if(!tipoCuenta.equalsIgnoreCase("CA") && !tipoCuenta.equalsIgnoreCase("CC")){
             throw new RuntimeException("Los unicos tipos de cuentas adminitdos son CA y CC");
         }
 
-        Cuenta cuenta;
-        if(tipoCuenta.equalsIgnoreCase("CC")){
-            cuenta = new CuentaCorriente(tipoCuenta, numeroCuenta, idUsuario, saldo);
-        } else {
-            cuenta = new CuentaDeAhorros(tipoCuenta, numeroCuenta, idUsuario, saldo);
+        Usuario usuario = (Usuario)repositorioUsuario.Buscar(idUsuario);
+
+        if(usuario == null) {
+            throw new RuntimeException("El usuario indicado no existe");
         }
 
-        return repositorio.crear(cuenta);
+        Cuenta cuenta;
+        if(tipoCuenta.equalsIgnoreCase("CC")){
+            cuenta = new CuentaCorriente(tipoCuenta, numeroCuenta, idUsuario, (float) saldo);
+        } else {
+            cuenta = new CuentaDeAhorros(tipoCuenta, numeroCuenta, idUsuario, (float)saldo);
+        }
+
+        return repositorioCuenta.crear(cuenta);
     }
 
     @Override
     public String eliminar(Object id) {
-        return repositorio.eliminar(id);
+        return repositorioCuenta.eliminar(id);
     }
 
     @Override
     public List<?> listar(Object id) {
-        return repositorio.listar(id);
+        return repositorioCuenta.listar(id);
     }
 }

@@ -35,7 +35,7 @@ public class UsuarioController extends HttpServlet {
                     String json = mapper.writeValueAsString(usuarios);
 
                     // configuramos la respuesta a devolver
-                    response.setStatus(HttpServletResponse.SC_CREATED);
+                    response.setStatus(HttpServletResponse.SC_OK);
                     response.setContentType("application/json");
                     response.getWriter().println(json);
                 } catch (Exception e) {

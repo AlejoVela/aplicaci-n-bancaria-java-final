@@ -7,7 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.sql.*;
 
-public class TransaccionBaseDeDatos implements  Repositorio{
+public class TransaccionBaseDeDatos implements Repositorio {
     private String conexionBD;
 
     public TransaccionBaseDeDatos(){
@@ -15,7 +15,7 @@ public class TransaccionBaseDeDatos implements  Repositorio{
             DriverManager.registerDriver(new org.sqlite.JDBC());
             conexionBD = "jdbc:sqlite:banco.db";
         }catch (SQLException e){
-            System.err.println("Error de conexión: " + e);
+            System.err.println("Error de base de datos: " + e);
         }
     }
 
@@ -31,9 +31,9 @@ public class TransaccionBaseDeDatos implements  Repositorio{
             Statement sentencia = conexion.createStatement();
             sentencia.execute(sentenciaSql);
         } catch (SQLException e) {
-            System.err.println("Error de conexión: " + e);
+            System.err.println("Error de base de datos: " + e);
         } catch (Exception e) {
-            System.err.println("Error " + e.getMessage());
+            System.err.println("Error: " + e.getMessage());
         }
         return "Transacción realizada";
     }
@@ -53,9 +53,9 @@ public class TransaccionBaseDeDatos implements  Repositorio{
             return "La transacción ha sido eliminada";
 
         } catch (SQLException e) {
-            return "Hubo un error con la conexión: " + e;
+            return "Error de base de datos: " + e;
         } catch (Exception e) {
-            return "Error " + e.getMessage();
+            return "Error: " + e.getMessage();
         }
     }
 
@@ -64,8 +64,9 @@ public class TransaccionBaseDeDatos implements  Repositorio{
         List<Transaccion> transacciones = new ArrayList<>();
 
         try (Connection conexion = DriverManager.getConnection(conexionBD)) {
-            String sentenciaSql = "SELECT * FROM TRANSACCIONES";
+            String sentenciaSql = "SELECT * FROM TRANSACCIONES WHERE ID_CUENTA = ?";
             PreparedStatement sentencia = conexion.prepareStatement(sentenciaSql);
+            sentencia.setInt(1, (int)idCuentaAListar);
             ResultSet resultadoConsulta = sentencia.executeQuery();
 
             if (resultadoConsulta != null) {
@@ -77,7 +78,7 @@ public class TransaccionBaseDeDatos implements  Repositorio{
                     String tipoTransaccion = resultadoConsulta.getString("TIPO_TRANSACCION");
                     float monto = resultadoConsulta.getFloat("MONTO");
                     int idCuenta = resultadoConsulta.getInt("ID_CUENTA");
-                    String tipoCuenta = resultadoConsulta.getString("TIPO_CUENTA");
+                    String tipoCuenta = resultadoConsulta.getString("TIPO_CUENTA_DESTINO");
 
                     transaccion = new Transaccion(id, tipoTransaccion, monto, idCuenta,tipoCuenta);
                     transacciones.add(transaccion);
@@ -85,8 +86,18 @@ public class TransaccionBaseDeDatos implements  Repositorio{
                 return transacciones;
             }
         } catch (SQLException e) {
-            System.err.println("Error de conexión: " + e);
+            throw  new RuntimeException("Error de base de datos: " + e);
         }
         return null;
+    }
+
+    @Override
+    public Object Buscar(int id) {
+        throw new RuntimeException("No implementado para este repositorio");
+    }
+
+    @Override
+    public Object Actualizar(Object objecto) {
+        throw new RuntimeException("No implementado para este repositorio");
     }
 }

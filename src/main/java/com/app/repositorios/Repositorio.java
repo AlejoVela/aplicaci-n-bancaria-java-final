@@ -8,4 +8,8 @@ public interface Repositorio {
     public String eliminar(Object objeto);
 
     public List<?> listar(Object id);
+
+    public Object Buscar(int id);
+
+    public Object Actualizar(Object objecto);
 }
